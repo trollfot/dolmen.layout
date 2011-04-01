@@ -15,8 +15,7 @@ class Layout(object):
 
     def __init__(self, context, request):
         self.context = context
-        self.request = request
-        self.response = None   
+        self.request = request 
 
     def namespace(self):
         namespace = {}
