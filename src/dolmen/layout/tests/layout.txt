@@ -1,0 +1,119 @@
+Layout
+******
+
+Let's first grok the meta module to define some basic grokkers::
+
+  >>> import dolmen.layout
+  >>> dolmen.layout.testing.grok('dolmen.layout.meta')
+
+
+Define a model and a request
+============================
+
+  >>> mammoth = object()
+  >>> request = object()
+
+
+Define a layout
+===============
+
+  >>> from zope.interface import Interface, implements
+  >>> from grokcore.component import testing
+
+  >>> class DefaultLayout(dolmen.layout.Layout):
+  ...     dolmen.layout.context(Interface)
+  ...
+  ...     def render(self, content):
+  ...         return u"I am the layout for %r. This is easy" % content
+
+  >>> testing.grok_component('default', DefaultLayout)
+  True
+
+
+Query a layout from a view
+==========================
+
+  >>> class QueryView(object):
+  ...
+  ...     def __init__(self, context, request):
+  ...         self.context = context
+  ...         self.request = request
+  ...
+  ...     @dolmen.layout.layout(dolmen.layout.ILayout)
+  ...     def render(self):
+  ...         return u"a query view rendering %r" % self.context
+
+  >>> print QueryView(mammoth, request).render()
+  I am the layout for u'a query view rendering <object object at ...>'.
+  This is easy
+
+
+
+Use a direct layout
+===================
+
+  >>> class SimpleLayout(dolmen.layout.Layout):
+  ...
+  ...     def render(self, content):
+  ...         return u"I am the layout for %r. This is DIRECT" % content
+
+
+  >>> class DirectView(object):
+  ...
+  ...     def __init__(self, context, request):
+  ...         self.context = context
+  ...         self.request = request
+  ...
+  ...     @dolmen.layout.layout(layout=SimpleLayout)
+  ...     def render(self):
+  ...         return u"a direct view rendering %r" % self.context
+
+  >>> print DirectView(mammoth, request).render()
+  I am the layout for u'a direct view rendering <object object at ...>'.
+  This is DIRECT
+
+
+An inheritable Page behavior
+============================
+
+  >>> import webob
+
+  >>> class ResponseLayout(dolmen.layout.Layout):
+  ...     dolmen.layout.context(Interface)
+  ...     dolmen.layout.name('resp')
+  ...
+  ...     responseFactory = webob.Response
+  ...
+  ...     def render(self, content):
+  ...         return u"Correct layout for %r." % content
+
+  >>> testing.grok_component('resp', ResponseLayout)
+  True
+
+  >>> class Page(object):
+  ...     responseFactory = webob.Response
+  ...
+  ...     def __init__(self, context, request):
+  ...         self.context = context
+  ...         self.request = request
+  ...
+  ...     def render(self):
+  ...         return "Isn't this pretty"
+  ...
+  ...     def update(self):
+  ...         self.response = self.responseFactory()
+  ...
+  ...     def __call__(self):
+  ...         self.update()
+  ...         if not self.response.status_int in [301, 302]:
+  ...            layout = dolmen.layout.query_layout(
+  ...                self.request, self.context,
+  ...                dolmen.layout.ILayout, 'resp')
+  ...            return layout(self.render())
+  ...         return self.response
+
+  >>> response = Page(mammoth, request)()
+  >>> response
+  <Response at ... 200 OK>
+  >>> print response.body
+  Correct layout for "Isn't this pretty".
