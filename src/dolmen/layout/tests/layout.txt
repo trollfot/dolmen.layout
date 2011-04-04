@@ -117,3 +117,30 @@ An inheritable Page behavior
   <Response at ... 200 OK>
   >>> print response.body
   Correct layout for "Isn't this pretty".
+
+
+Pushing something in the namespace
+==================================
+
+  >>> class SomeLayout(dolmen.layout.Layout):
+  ...     dolmen.layout.context(Interface)
+  ...
+  ...     responseFactory = webob.Response
+  ...
+  ...     def render(self, content):
+  ...         return u"My namespace is %r." % self.namespace()
+
+  >>> class MyView(object):
+  ...     pass
+
+  >>> view = MyView()
+  >>> layout = SomeLayout(request, mammoth)
+  >>> print layout("something to render", **{'view': view})
+  200 OK
+  Content-Type: text/html; charset=UTF-8
+  Content-Length: 223
+  <BLANKLINE>
+  My namespace is {'layout': <dolmen.layout.tests.SomeLayout object at ...>,
+                   'request': <object object at ...>,
+                   'context': <object object at ...>,
+                   'view': <dolmen.layout.tests.MyView object at ...>}.

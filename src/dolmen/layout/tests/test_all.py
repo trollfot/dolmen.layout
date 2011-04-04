@@ -1,5 +1,5 @@
-"""Test setup for megrok.chameleon.
-"""
+# -*- coding: utf-8 -*-
+
 import doctest
 import unittest
 import dolmen.layout

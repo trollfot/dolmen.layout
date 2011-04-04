@@ -15,13 +15,12 @@ long_description = read('README.txt') + '\n' + read('CHANGES.txt')
 install_requires = [
     'cromlech.io',
     'cromlech.browser',
-    'grokcore.component >= 2.1',
+    'grokcore.component >= 2.3',
     'martian >= 0.13',
     'setuptools',
     'zc.buildout',
     'zope.component',
     'zope.interface',
-    'zope.location',
     ]
 
 tests_require = [

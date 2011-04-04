@@ -16,24 +16,26 @@ class Layout(object):
     def __init__(self, context, request):
         self.context = context
         self.request = request 
+        self.push_in = dict()
 
     def namespace(self):
         namespace = {}
         namespace['context'] = self.context
         namespace['request'] = self.request
         namespace['layout'] = self
+        namespace.update(self.push_in)
         return namespace
 
-    def update(self, **kwargs):
-        pass
+    def update(self, **extra):
+        if extra: self.push_in = extra
 
     def render(self, content):
         if self.template is None:
             raise NotImplementedError("Template is not defined.")
         return self.template.render(self, **{'content': content})
 
-    def __call__(self, content):
-        self.update()
+    def __call__(self, content, **extra):
+        self.update(**extra)
         self.response = self.responseFactory()
         self.response.write(self.render(content) or u'')
         return self.response
