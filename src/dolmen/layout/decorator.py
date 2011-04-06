@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
 
 from cromlech.browser.interfaces import ILayout, IRenderer
+from cromlech.io import IRequest
+from zope import interface
 from zope.interface.interfaces import IInterface
 from zope.component import getMultiAdapter
 
 
 def query_layout(request, context, interface=ILayout, name=''):
+    assert interface.isOrExtends(ILayout)
+    assert IRequest.providedBy(request)
     return getMultiAdapter((request, context), interface, name=name)
 
 
@@ -21,13 +25,13 @@ class layout(object):
             assert interface.isOrExtends(IRenderer)
         elif layout is None:
             assert ILayout.implementedBy(layout)
-        
+
         self.interface = interface
         self.layout = layout
         self.name = name
- 
+
     def __call__(self, func):
-        
+
         def render(view, *args, **kwargs):
 
             if self.interface is not None:
