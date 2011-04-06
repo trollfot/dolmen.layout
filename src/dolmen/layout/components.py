@@ -26,15 +26,15 @@ class Layout(object):
         namespace.update(self.push_in)
         return namespace
 
-    def update(self, **extra):
+    def update(self, *args, **extra):
         if extra: self.push_in = extra
 
-    def render(self, content):
+    def render(self, content='', *args, **extra):
         if self.template is None:
             raise NotImplementedError("Template is not defined.")
         return self.template.render(self, **{'content': content})
 
-    def __call__(self, content, **extra):
+    def __call__(self, content='', *args, **extra):
         self.update(**extra)
         self.response = self.responseFactory()
         self.response.write(self.render(content) or u'')

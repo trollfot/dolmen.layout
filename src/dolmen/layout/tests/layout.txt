@@ -18,7 +18,15 @@ Define a layout
 ===============
 
   >>> from zope.interface import Interface, implements
+  >>> from zope.interface.verify import verifyClass
   >>> from grokcore.component import testing
+
+Layout provide a base ILayout implementation to buid onto::
+
+  >>> verifyClass(dolmen.layout.ILayout, dolmen.layout.Layout)
+  True
+
+Let's define one::
 
   >>> class DefaultLayout(dolmen.layout.Layout):
   ...     dolmen.layout.context(Interface)
@@ -76,6 +84,10 @@ Use a direct layout
 An inheritable Page behavior
 ============================
 
+Decorator would prevent subclass to retrieve render result before layout
+application, so another method is to apply layout in __call__.
+For that we will use query_layout to get the layout ::
+
   >>> import webob
 
   >>> class ResponseLayout(dolmen.layout.Layout):
@@ -122,6 +134,11 @@ An inheritable Page behavior
 Pushing something in the namespace
 ==================================
 
+You sometime need to push something from the 
+view in the layout namespace, for example to display specific menus associated
+with this view. You can inject object at render time thanks to keywords 
+arguments::
+
   >>> class SomeLayout(dolmen.layout.Layout):
   ...     dolmen.layout.context(Interface)
   ...
@@ -135,7 +152,7 @@ Pushing something in the namespace
 
   >>> view = MyView()
   >>> layout = SomeLayout(request, mammoth)
-  >>> print layout("something to render", **{'view': view})
+  >>> print layout("something to render", view=view)
   200 OK
   Content-Type: text/html; charset=UTF-8
   Content-Length: 223
