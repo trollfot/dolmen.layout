@@ -13,10 +13,8 @@ Define a model and a request
   >>> mammoth = object()
 
   >>> from zope.interface import Interface, implements
-  >>> from cromlech.io import IRequest
-  >>> class Request(object):
-  ...     implements(IRequest)
-  >>> request = Request()
+  >>> from cromlech.io.tests import TestRequest
+  >>> request = TestRequest()
 
 
 Define a layout
@@ -159,9 +157,9 @@ arguments::
   >>> print layout("something to render", view=view)
   200 OK
   Content-Type: text/html; charset=UTF-8
-  Content-Length: 243
+  Content-Length: 245
   <BLANKLINE>
   My namespace is {'layout': <dolmen.layout.tests.SomeLayout object at ...>,
-                   'request': <dolmen.layout.tests.Request object at ...>,
+                   'request': <cromlech.io.tests.TestRequest object at ...>,
                    'context': <object object at ...>,
                    'view': <dolmen.layout.tests.MyView object at ...>}.
