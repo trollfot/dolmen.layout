@@ -13,7 +13,7 @@ Define a model and a request
   >>> mammoth = object()
 
   >>> from zope.interface import Interface, implements
-  >>> from cromlech.io.tests import TestRequest
+  >>> from cromlech.io.testing import TestRequest
   >>> request = TestRequest()
 
 
@@ -34,7 +34,7 @@ Let's define one::
   ...     dolmen.layout.context(Interface)
   ...
   ...     def render(self, content):
-  ...         return u"I am the layout for %r. This is easy" % content
+  ...         return u"I am the layout for %r." % content
 
   >>> testing.grok_component('default', DefaultLayout)
   True
@@ -51,12 +51,10 @@ Query a layout from a view
   ...
   ...     @dolmen.layout.layout(dolmen.layout.ILayout)
   ...     def render(self):
-  ...         return u"a query view rendering %r" % self.context
+  ...         return u"a query view rendering %r" % self.context.__class__
 
   >>> print QueryView(mammoth, request).render()
-  I am the layout for u'a query view rendering <object object at ...>'.
-  This is easy
-
+  I am the layout for u"a query view rendering <type 'object'>".
 
 
 Use a direct layout
@@ -65,7 +63,8 @@ Use a direct layout
   >>> class SimpleLayout(dolmen.layout.Layout):
   ...
   ...     def render(self, content):
-  ...         return u"I am the layout for %r. This is DIRECT" % content
+  ...         return u"I am the layout for %r. This is DIRECT" % (
+  ...                               content.__class__)
 
 
   >>> class DirectView(object):
@@ -79,8 +78,7 @@ Use a direct layout
   ...         return u"a direct view rendering %r" % self.context
 
   >>> print DirectView(mammoth, request).render()
-  I am the layout for u'a direct view rendering <object object at ...>'.
-  This is DIRECT
+  I am the layout for <type 'unicode'>. This is DIRECT
 
 
 An inheritable Page behavior
@@ -147,7 +145,7 @@ arguments::
   ...     responseFactory = webob.Response
   ...
   ...     def render(self, content):
-  ...         return u"My namespace is %r." % self.namespace()
+  ...         return u"My namespace is %r." % self.namespace().keys()
 
   >>> class MyView(object):
   ...     pass
@@ -157,9 +155,6 @@ arguments::
   >>> print layout("something to render", view=view)
   200 OK
   Content-Type: text/html; charset=UTF-8
-  Content-Length: 245
+  Content-Length: 57
   <BLANKLINE>
-  My namespace is {'layout': <dolmen.layout.tests.SomeLayout object at ...>,
-                   'request': <cromlech.io.tests.TestRequest object at ...>,
-                   'context': <object object at ...>,
-                   'view': <dolmen.layout.tests.MyView object at ...>}.
+  My namespace is ['layout', 'request', 'context', 'view'].
