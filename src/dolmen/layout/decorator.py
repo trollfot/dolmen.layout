@@ -2,9 +2,8 @@
 
 from cromlech.browser.interfaces import ILayout, IRenderer
 from cromlech.io import IRequest
-from zope import interface
-from zope.interface.interfaces import IInterface
 from zope.component import getMultiAdapter
+from zope.interface.interfaces import IInterface
 
 
 def query_layout(request, context, interface=ILayout, name=''):

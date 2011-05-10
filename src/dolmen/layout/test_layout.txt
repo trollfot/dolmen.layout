@@ -4,7 +4,10 @@ Layout
 Let's first grok the meta module to define some basic grokkers::
 
   >>> import dolmen.layout
-  >>> dolmen.layout.testing.grok('dolmen.layout.meta')
+  >>> from cromlech.browser.testing import TestResponse
+
+  >>> from grokcore.component import testing
+  >>> testing.grok('dolmen.layout.meta')
 
 
 Define a model and a request
@@ -88,13 +91,11 @@ Decorator would prevent subclass to retrieve render result before layout
 application, so another method is to apply layout in __call__.
 For that we will use query_layout to get the layout ::
 
-  >>> import webob
-
   >>> class ResponseLayout(dolmen.layout.Layout):
   ...     dolmen.layout.context(Interface)
   ...     dolmen.layout.name('resp')
   ...
-  ...     responseFactory = webob.Response
+  ...     responseFactory = TestResponse
   ...
   ...     def render(self, content):
   ...         return u"Correct layout for %r." % content
@@ -103,7 +104,7 @@ For that we will use query_layout to get the layout ::
   True
 
   >>> class Page(object):
-  ...     responseFactory = webob.Response
+  ...     responseFactory = TestResponse
   ...
   ...     def __init__(self, context, request):
   ...         self.context = context
@@ -125,8 +126,6 @@ For that we will use query_layout to get the layout ::
   ...         return self.response
 
   >>> response = Page(mammoth, request)()
-  >>> response
-  <Response at ... 200 OK>
   >>> print response.body
   Correct layout for "Isn't this pretty".
 
@@ -142,7 +141,7 @@ arguments::
   >>> class SomeLayout(dolmen.layout.Layout):
   ...     dolmen.layout.context(Interface)
   ...
-  ...     responseFactory = webob.Response
+  ...     responseFactory = TestResponse
   ...
   ...     def render(self, content):
   ...         return u"My namespace is %r." % self.namespace().keys()
@@ -152,9 +151,6 @@ arguments::
 
   >>> view = MyView()
   >>> layout = SomeLayout(mammoth, request)
-  >>> print layout("something to render", view=view)
-  200 OK
-  Content-Type: text/html; charset=UTF-8
-  Content-Length: 57
-  <BLANKLINE>
+  >>> response = layout("something to render", view=view)
+  >>> print response.body
   My namespace is ['layout', 'request', 'context', 'view'].

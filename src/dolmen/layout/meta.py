@@ -14,7 +14,7 @@ class LayoutGrokker(martian.ClassGrokker):
     martian.directive(directives.request)
     martian.directive(grokcore.component.provides, default=ILayout)
     martian.directive(grokcore.component.name)
-    
+
     def grok(self, name, factory, module_info, **kw):
         factory.module_info = module_info
         return super(LayoutGrokker, self).grok(
@@ -25,6 +25,5 @@ class LayoutGrokker(martian.ClassGrokker):
         config.action(
             discriminator=('adapter', adapts, provides),
             callable=zope.component.provideAdapter,
-            args=(factory, adapts, provides, name),
-            )
+            args=(factory, adapts, provides, name))
         return True

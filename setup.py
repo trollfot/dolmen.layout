@@ -1,16 +1,11 @@
 # -*- coding: utf-8 -*-
 
-import os
+from os.path import join
 from setuptools import setup, find_packages
 
-def read(*rnames):
-    return open(
-        os.path.join(
-            os.path.join(os.path.dirname(__file__), 'docs'),
-            *rnames)).read()
-
-version = 0.1
-long_description = read('README.txt') + '\n' + read('CHANGES.txt')
+version = "0.1a1"
+readme = open('README.txt').read()
+history = open(join('docs', 'HISTORY.txt')).read()
 
 install_requires = [
     'cromlech.io',
@@ -18,14 +13,11 @@ install_requires = [
     'grokcore.component >= 2.4',
     'martian >= 0.14',
     'setuptools',
-    'zc.buildout',
     'zope.component',
     'zope.interface',
     ]
 
 tests_require = [
-    'WebOb',
-    'zope.configuration',
     'cromlech.browser [test]',
     ]
 
@@ -37,7 +29,7 @@ setup(
     url='http://gitweb.dolmen-project.org',
     download_url='http://pypi.python.org/pypi/dolmen.layout',
     description='Layout components for View rendering',
-    long_description=long_description,
+    long_description=readme + '\n\n' + history,
     license='ZPL',
     classifiers=[
         'Environment :: Web Environment',
@@ -55,4 +47,4 @@ setup(
     extras_require={
         'test': tests_require,
         },
-)
+    )

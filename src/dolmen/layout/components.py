@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from grokcore.component import baseclass, implements
 from cromlech.browser.interfaces import ILayout
+from grokcore.component import baseclass, implements
 
 
 class Layout(object):
@@ -15,7 +15,7 @@ class Layout(object):
 
     def __init__(self, request, context):
         self.context = context
-        self.request = request 
+        self.request = request
         self.push_in = dict()
 
     def namespace(self):
@@ -27,7 +27,8 @@ class Layout(object):
         return namespace
 
     def update(self, *args, **extra):
-        if extra: self.push_in = extra
+        if extra:
+            self.push_in = extra
 
     def render(self, content='', *args, **extra):
         if self.template is None:
