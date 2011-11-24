@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from cromlech.i18n import ILanguage
 from cromlech.browser.interfaces import ILayout
 from grokcore.component import baseclass, implements
 
@@ -26,6 +27,10 @@ class Layout(object):
         namespace.update(self.push_in)
         return namespace
 
+    @property
+    def target_language(self):
+        return ILanguage(self.request)
+
     def update(self, *args, **extra):
         if extra:
             self.push_in = extra
@@ -33,7 +38,8 @@ class Layout(object):
     def render(self, content='', *args, **extra):
         if self.template is None:
             raise NotImplementedError("Template is not defined.")
-        return self.template.render(self, **{'content': content})
+        return self.template.render(
+            self, target_language=self.target_language, **{'content': content})
 
     def __call__(self, content='', *args, **extra):
         self.update(**extra)

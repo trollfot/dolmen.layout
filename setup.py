@@ -3,13 +3,14 @@
 from os.path import join
 from setuptools import setup, find_packages
 
-version = "0.1a1"
+version = "0.2a1"
 readme = open('README.txt').read()
 history = open(join('docs', 'HISTORY.txt')).read()
 
 install_requires = [
-    'cromlech.io',
     'cromlech.browser',
+    'cromlech.i18n',
+    'cromlech.io',
     'grokcore.component >= 2.4',
     'martian >= 0.14',
     'setuptools',
