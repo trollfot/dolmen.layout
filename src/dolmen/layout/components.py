@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from cromlech.i18n import ILanguage
 from cromlech.browser.interfaces import ILayout
+from cromlech.i18n import ILanguage
 from grokcore.component import baseclass, implements
 
 
@@ -29,7 +29,7 @@ class Layout(object):
 
     @property
     def target_language(self):
-        return ILanguage(self.request)
+        return ILanguage(self.request, None)
 
     def update(self, *args, **extra):
         if extra:
