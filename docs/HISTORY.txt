@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.2a2 (2012-01-11)
+------------------
+
+* I18n doesn't raise an error if no languages preference has been registered.
+
+* Adapted the code for the newest `cromlech` packages.
+
+
 0.2a1 (2011-11-24)
 ------------------
 

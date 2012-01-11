@@ -4,7 +4,7 @@ Layout
 Let's first grok the meta module to define some basic grokkers::
 
   >>> import dolmen.layout
-  >>> from cromlech.browser.testing import TestResponse
+  >>> from cromlech.browser.testing import TestHTTPResponse
 
   >>> from grokcore.component import testing
   >>> testing.grok('dolmen.layout.meta')
@@ -16,8 +16,8 @@ Define a model and a request
   >>> mammoth = object()
 
   >>> from zope.interface import Interface, implements
-  >>> from cromlech.io.testing import TestRequest
-  >>> request = TestRequest()
+  >>> from cromlech.browser.testing import TestHTTPRequest
+  >>> request = TestHTTPRequest()
 
 
 Define a layout
@@ -95,7 +95,7 @@ For that we will use query_layout to get the layout ::
   ...     dolmen.layout.context(Interface)
   ...     dolmen.layout.name('resp')
   ...
-  ...     responseFactory = TestResponse
+  ...     responseFactory = TestHTTPResponse
   ...
   ...     def render(self, content):
   ...         return u"Correct layout for %r." % content
@@ -104,7 +104,7 @@ For that we will use query_layout to get the layout ::
   True
 
   >>> class Page(object):
-  ...     responseFactory = TestResponse
+  ...     responseFactory = TestHTTPResponse
   ...
   ...     def __init__(self, context, request):
   ...         self.context = context
@@ -141,7 +141,7 @@ arguments::
   >>> class SomeLayout(dolmen.layout.Layout):
   ...     dolmen.layout.context(Interface)
   ...
-  ...     responseFactory = TestResponse
+  ...     responseFactory = TestHTTPResponse
   ...
   ...     def render(self, content):
   ...         return u"My namespace is %r." % self.namespace().keys()

@@ -32,8 +32,7 @@ class Layout(object):
         return ILanguage(self.request, None)
 
     def update(self, *args, **extra):
-        if extra:
-            self.push_in = extra
+        self.push_in.update(extra)
 
     def render(self, content='', *args, **extra):
         if self.template is None:
