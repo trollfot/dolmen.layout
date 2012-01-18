@@ -1,6 +1,25 @@
 Changelog
 =========
 
+0.3 (2012-01-17)
+----------------
+
+* Echoed the last changes in ``cromlech.browser``. `ILayout` is no longer a 
+  `IHTTPRenderer` but a `IRenderer` this means : it's no longer callable,
+  it no longer needs to return a response object and it doesn't hold any
+  `responseFactory`.
+
+* ``cromlech.browser`` no longer defines `context` and `request` attrs for
+  the `IView` component and some other. This means, we can no longer assume
+  that the rendered view holds these attributes, therefore the `layout`
+  decorator has been removed. It needs to be implemented in ``dolmen.view``,
+  for this very specific implementation.
+
+* The namespace is no longer updated using `update`, but is injected
+  on-the-fly in the template, in the `render` method (if a template is used).
+  This means that the namespace is no longer updatable out-of-the-box.
+
+
 0.2a2 (2012-01-11)
 ------------------
 

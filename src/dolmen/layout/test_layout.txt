@@ -36,94 +36,51 @@ Let's define one::
   >>> class DefaultLayout(dolmen.layout.Layout):
   ...     dolmen.layout.context(Interface)
   ...
-  ...     def render(self, content):
+  ...     def render(self, content='', view=None, *args, **more):
   ...         return u"I am the layout for %r." % content
 
   >>> testing.grok_component('default', DefaultLayout)
   True
 
 
-Query a layout from a view
-==========================
-
-  >>> class QueryView(object):
-  ...
-  ...     def __init__(self, context, request):
-  ...         self.context = context
-  ...         self.request = request
-  ...
-  ...     @dolmen.layout.layout(dolmen.layout.ILayout)
-  ...     def render(self):
-  ...         return u"a query view rendering %r" % self.context.__class__
-
-  >>> print QueryView(mammoth, request).render()
-  I am the layout for u"a query view rendering <type 'object'>".
-
-
-Use a direct layout
-===================
-
-  >>> class SimpleLayout(dolmen.layout.Layout):
-  ...
-  ...     def render(self, content):
-  ...         return u"I am the layout for %r. This is DIRECT" % (
-  ...                               content.__class__)
-
-
-  >>> class DirectView(object):
-  ...
-  ...     def __init__(self, context, request):
-  ...         self.context = context
-  ...         self.request = request
-  ...
-  ...     @dolmen.layout.layout(layout=SimpleLayout)
-  ...     def render(self):
-  ...         return u"a direct view rendering %r" % self.context
-
-  >>> print DirectView(mammoth, request).render()
-  I am the layout for <type 'unicode'>. This is DIRECT
-
-
 An inheritable Page behavior
 ============================
-
-Decorator would prevent subclass to retrieve render result before layout
-application, so another method is to apply layout in __call__.
-For that we will use query_layout to get the layout ::
 
   >>> class ResponseLayout(dolmen.layout.Layout):
   ...     dolmen.layout.context(Interface)
   ...     dolmen.layout.name('resp')
   ...
-  ...     responseFactory = TestHTTPResponse
-  ...
-  ...     def render(self, content):
+  ...     def render(self, content='', view=None, *args, **more):
   ...         return u"Correct layout for %r." % content
 
   >>> testing.grok_component('resp', ResponseLayout)
   True
 
   >>> class Page(object):
+  ...
   ...     responseFactory = TestHTTPResponse
   ...
   ...     def __init__(self, context, request):
   ...         self.context = context
   ...         self.request = request
   ...
-  ...     def render(self):
+  ...     def render(self, *args, **kwargs):
   ...         return "Isn't this pretty"
   ...
-  ...     def update(self):
-  ...         self.response = self.responseFactory()
+  ...     def update(self, *args, **kwargs):
+  ...         pass
   ...
-  ...     def __call__(self):
+  ...     def __call__(self, *args, **kwargs):
+  ...         response = self.responseFactory()
   ...         self.update()
-  ...         if not self.response.status_int in [301, 302]:
-  ...            layout = dolmen.layout.query_layout(
-  ...                self.request, self.context,
-  ...                dolmen.layout.ILayout, 'resp')
-  ...            return layout(self.render())
-  ...         return self.response
+  ...         layout = dolmen.layout.query_layout(
+  ...             self.request, self.context,
+  ...             dolmen.layout.ILayout, 'resp')
+  ...         layout.update()
+  ...         content = self.render()
+  ...         result = layout.render(content=content, view=self)
+  ...         response.write(result or u'')
+  ...         return response
 
   >>> response = Page(mammoth, request)()
   >>> print response.body
@@ -141,16 +98,14 @@ arguments::
   >>> class SomeLayout(dolmen.layout.Layout):
   ...     dolmen.layout.context(Interface)
   ...
-  ...     responseFactory = TestHTTPResponse
-  ...
-  ...     def render(self, content):
-  ...         return u"My namespace is %r." % self.namespace().keys()
+  ...     def render(self, content='', view=None, *args, **more):
+  ...         return u"My view is %r." % view
 
   >>> class MyView(object):
   ...     pass
 
   >>> view = MyView()
   >>> layout = SomeLayout(mammoth, request)
-  >>> response = layout("something to render", view=view)
-  >>> print response.body
-  My namespace is ['layout', 'request', 'context', 'view'].
+  >>> layout.update()
+  >>> print layout.render(content="something to render", view=view)
+  My view is <...MyView...>.
