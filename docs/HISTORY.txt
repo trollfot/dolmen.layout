@@ -1,6 +1,13 @@
 Changelog
 =========
 
+0.3.1 (2012-01-18)
+------------------
+
+* Fixed a bug in the template rendering, where the namespace was not passed
+  as a keyword argument. This has been fixed.
+
+
 0.3 (2012-01-17)
 ----------------
 

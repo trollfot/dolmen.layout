@@ -53,4 +53,4 @@ class Layout(object):
         if self.template is None:
             raise NotImplementedError("Template is not defined.")
         return self.template.render(
-            self, target_language=self.target_language, *namespace)
+            self, target_language=self.target_language, **namespace)
