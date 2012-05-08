@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from cromlech.io import IRequest
-from cromlech.browser.interfaces import ILayout, ITemplate
+from cromlech.browser import IRequest, ILayout, ITemplate
 from cromlech.i18n import ILanguage
 from grokcore.component import baseclass, implements
 from zope.component import queryMultiAdapter
@@ -33,24 +32,23 @@ class Layout(object):
         self.context = context
         self.request = request
 
-    def namespace(self):
-        namespace = {}
-        namespace['context'] = self.context
-        namespace['request'] = self.request
-        namespace['layout'] = self
+    def namespace(self, **extra):
+        namespace = {
+            'context': self.context,
+            'request': self.request,
+            'layout': self,
+            }
+        namespace.update(extra)
         return namespace
 
     @property
     def target_language(self):
         return ILanguage(self.request, None)
 
-    def update(self, *args, **kws):
-        pass
-
-    def render(self, content='', view=None, *args, **more):
-        namespace = {'content': content, 'view': view}
-        namespace.update(**more)
+    def __call__(self, content, **namespace):
+        environ = self.namespace(**namespace)
+        environ['content'] = content
         if self.template is None:
             raise NotImplementedError("Template is not defined.")
         return self.template.render(
-            self, target_language=self.target_language, **namespace)
+            self, target_language=self.target_language, **environ)

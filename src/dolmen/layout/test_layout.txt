@@ -4,7 +4,7 @@ Layout
 Let's first grok the meta module to define some basic grokkers::
 
   >>> import dolmen.layout
-  >>> from cromlech.browser.testing import TestHTTPResponse
+  >>> from cromlech.browser.testing import TestResponse
 
   >>> from grokcore.component import testing
   >>> testing.grok('dolmen.layout.meta')
@@ -16,8 +16,8 @@ Define a model and a request
   >>> mammoth = object()
 
   >>> from zope.interface import Interface, implements
-  >>> from cromlech.browser.testing import TestHTTPRequest
-  >>> request = TestHTTPRequest()
+  >>> from cromlech.browser.testing import TestRequest
+  >>> request = TestRequest()
 
 
 Define a layout
@@ -36,7 +36,7 @@ Let's define one::
   >>> class DefaultLayout(dolmen.layout.Layout):
   ...     dolmen.layout.context(Interface)
   ...
-  ...     def render(self, content='', view=None, *args, **more):
+  ...     def render(self, content, **more):
   ...         return u"I am the layout for %r." % content
 
   >>> testing.grok_component('default', DefaultLayout)
@@ -50,7 +50,7 @@ An inheritable Page behavior
   ...     dolmen.layout.context(Interface)
   ...     dolmen.layout.name('resp')
   ...
-  ...     def render(self, content='', view=None, *args, **more):
+  ...     def __call__(self, content, **more):
   ...         return u"Correct layout for %r." % content
 
   >>> testing.grok_component('resp', ResponseLayout)
@@ -58,32 +58,17 @@ An inheritable Page behavior
 
   >>> class Page(object):
   ...
-  ...     responseFactory = TestHTTPResponse
-  ...
   ...     def __init__(self, context, request):
   ...         self.context = context
   ...         self.request = request
   ...
-  ...     def render(self, *args, **kwargs):
-  ...         return "Isn't this pretty"
-  ...
-  ...     def update(self, *args, **kwargs):
-  ...         pass
-  ...
   ...     def __call__(self, *args, **kwargs):
-  ...         response = self.responseFactory()
-  ...         self.update()
   ...         layout = dolmen.layout.query_layout(
   ...             self.request, self.context,
   ...             dolmen.layout.ILayout, 'resp')
-  ...         layout.update()
-  ...         content = self.render()
-  ...         result = layout.render(content=content, view=self)
-  ...         response.write(result or u'')
-  ...         return response
+  ...         return layout("Isn't this pretty")
 
-  >>> response = Page(mammoth, request)()
-  >>> print response.body
+  >>> print Page(mammoth, request)()
   Correct layout for "Isn't this pretty".
 
 
@@ -98,14 +83,13 @@ arguments::
   >>> class SomeLayout(dolmen.layout.Layout):
   ...     dolmen.layout.context(Interface)
   ...
-  ...     def render(self, content='', view=None, *args, **more):
-  ...         return u"My view is %r." % view
+  ...     def __call__(self, content, **more):
+  ...         return u"My value is %r." % more['val']
 
   >>> class MyView(object):
   ...     pass
 
   >>> view = MyView()
   >>> layout = SomeLayout(mammoth, request)
-  >>> layout.update()
-  >>> print layout.render(content="something to render", view=view)
-  My view is <...MyView...>.
+  >>> print layout("something to render", val=1)
+  My value is 1.

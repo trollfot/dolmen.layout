@@ -3,8 +3,8 @@
 import martian
 import zope.component
 import grokcore.component
-from cromlech.io import directives
-from cromlech.browser.interfaces import ILayout
+from cromlech.browser import directives
+from cromlech.browser import ILayout
 from dolmen.layout import Layout
 
 
