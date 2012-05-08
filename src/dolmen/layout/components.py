@@ -15,7 +15,7 @@ def query_layout(request, context, interface=ILayout, name=''):
 def query_layout_template(layout, interface=ITemplate, name=""):
     """Returns a template associated to a view, or None.
     """
-    assert ILayout.providedBy(view)
+    assert ILayout.providedBy(layout)
     assert interface.isOrExtends(ITemplate)
     return queryMultiAdapter((layout, layout.request), interface, name=name)
 
